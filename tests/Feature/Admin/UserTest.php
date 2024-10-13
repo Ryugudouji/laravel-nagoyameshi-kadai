@@ -23,9 +23,8 @@ class UserTest extends TestCase
     public function test_regular_user_can_not_access_admin_users_index()
     {
         $user = User::factory()->create(); // 一般ユーザーを作成
-        $this->actingAs($user); // 一般ユーザーとしてログイン
 
-        $response = $this->get('/admin/users');
+        $response = $this->actingAs($user)->get('/admin/users');
         $response->assertStatus(403); // 権限がないため403 Forbiddenが返されることを確認
     }
 
@@ -38,16 +37,7 @@ class UserTest extends TestCase
         $admin->save();
 
         // 管理者としてログイン
-        $response = $this->post('/admin/login', [
-            'email' => $admin->email,
-            'password' => 'nagoyameshi',
-        ]);
-
-        // ログインが成功したことを確認
-        $response->assertRedirect('/admin/users'); // 成功後のリダイレクト先を確認
-
-        // 管理者として会員一覧ページにアクセス
-        $response = $this->get('/admin/users');
+        $response = $this->actingAs($admin, 'admin')->get('/admin/users');
         $response->assertStatus(200);  // 200 OKが返されることを確認
     }
 
@@ -64,9 +54,8 @@ class UserTest extends TestCase
     public function test_regular_user_can_not_access_admin_users_show()
     {
         $user = User::factory()->create(); // 一般ユーザーを作成
-        $this->actingAs($user); // 一般ユーザーとしてログイン
 
-        $response = $this->get("/admin/users/{$user->id}");
+        $response = $this->actingAs($user)->get("/admin/users/{$user->id}");
         $response->assertStatus(403);  // 権限がないため403 Forbiddenが返されることを確認
     }
 
@@ -79,13 +68,7 @@ class UserTest extends TestCase
         $admin->save();
 
         // 管理者としてログイン
-        $response = $this->post('/admin/login', [
-        'email' => $admin->email,
-        'password' => 'nagoyameshi',
-        ]);
-
-        // ログインが成功したことを確認
-        $response->assertRedirect('/admin/users'); // 成功後のリダイレクト先を確認
+        $this->actingAs($admin, 'admin');
 
         // テスト用のユーザーを作成
         $user = User::factory()->create(); // 既存のユーザーを作成

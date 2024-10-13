@@ -8,6 +8,12 @@ use App\Models\User;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        // 管理者のみアクセスできるようにミドルウェアを設定
+        $this->middleware('auth:admin');
+    }
+
     public function index(Request $request)
     {
 
