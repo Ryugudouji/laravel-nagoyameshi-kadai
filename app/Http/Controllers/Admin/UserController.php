@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -16,6 +17,10 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
+
+        // if (!Auth::guard('admin')->check()) {
+        //     abort(403);
+        // }
 
         $keyword = $request->input('keyword');
 
@@ -36,6 +41,9 @@ class UserController extends Controller
     public function show($id)
     {
 
+        // if (!Auth::guard('admin')->check()) {
+        //     abort(403);
+        // }
     $user = User::findOrFail($id);
 
     return view('admin.users.show', compact('user'));

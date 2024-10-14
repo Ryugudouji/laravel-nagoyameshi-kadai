@@ -23,9 +23,9 @@ class UserTest extends TestCase
     public function test_regular_user_can_not_access_admin_users_index()
     {
         $user = User::factory()->create(); // 一般ユーザーを作成
+        $response = $this->actingAs($user)->get('/admin/users'); // 一般ユーザーとしてログイン
 
-        $response = $this->actingAs($user)->get('/admin/users');
-        $response->assertStatus(403); // 権限がないため403 Forbiddenが返されることを確認
+        $response->assertRedirect('/admin/login');
     }
 
     // ログイン済みの管理者が会員一覧ページにアクセスできる
@@ -36,8 +36,9 @@ class UserTest extends TestCase
         $admin->password = Hash::make('nagoyameshi');
         $admin->save();
 
-        // 管理者としてログイン
         $response = $this->actingAs($admin, 'admin')->get('/admin/users');
+
+         // 管理者として会員一覧ページにアクセス
         $response->assertStatus(200);  // 200 OKが返されることを確認
     }
 
@@ -56,7 +57,7 @@ class UserTest extends TestCase
         $user = User::factory()->create(); // 一般ユーザーを作成
 
         $response = $this->actingAs($user)->get("/admin/users/{$user->id}");
-        $response->assertStatus(403);  // 権限がないため403 Forbiddenが返されることを確認
+        $response->assertRedirect('/admin/login');
     }
 
     // ログイン済みの管理者が会員詳細ページにアクセスできる
@@ -67,14 +68,11 @@ class UserTest extends TestCase
         $admin->password = Hash::make('nagoyameshi');
         $admin->save();
 
-        // 管理者としてログイン
-        $this->actingAs($admin, 'admin');
-
         // テスト用のユーザーを作成
-        $user = User::factory()->create(); // 既存のユーザーを作成
+        $user = User::factory()->create();
 
-        // 管理者として会員詳細ページにアクセス
-        $response = $this->get("/admin/users/{$user->id}");
+        // 管理者としてテスト用に作成した会員詳細ページにアクセス
+        $response = $this->actingAs($admin, 'admin')->get("/admin/users/{$user->id}");
         $response->assertStatus(200); // 200 OKが返されることを確認
     }
 
