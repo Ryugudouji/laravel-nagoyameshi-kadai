@@ -14,9 +14,29 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
+
+        // $admin = Admin::firstOrCreate(
+        //     ['email' => 'admin@example.com'],
+        //     ['password' => Hash::make('nagoyameshi')]
+        // );
+
+        // // レビュー用アカウント
+        // $admin = Admin::firstOrCreate(
+        //     ['email' => 'review@example.com'],
+        //     ['password' => Hash::make('review')]
+        // );
+
+        Admin::truncate();
+
         $admin = new Admin();
         $admin->email = 'admin@example.com';
         $admin->password = Hash::make('nagoyameshi');
         $admin->save();
+
+        $admin = new Admin();
+        $admin->email = 'review@example.com';
+        $admin->password = Hash::make('review');
+        $admin->save();
+
     }
 }
