@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\RestaurantController;
 use App\Http\Controllers\Admin\UserController;
 
 /*
@@ -25,4 +26,5 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin
     Route::get('home', [Admin\HomeController::class, 'index'])->name('home');
 
     Route::resource('users', UserController::class);
+    Route::resource('restaurans', RestaurantController::class);
 });
