@@ -26,5 +26,21 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin
     Route::get('home', [Admin\HomeController::class, 'index'])->name('home');
 
     Route::resource('users', UserController::class);
-    Route::resource('restaurans', RestaurantController::class);
+    Route::resource('restaurants', RestaurantController::class);
 });
+
+/*
+/admin/home admin.home
+
+/admin/users
+/admin/users/create
+...
+/admin/restaurants
+/admin/restaurants/create
+
+
+Route::get('home', [Admin\HomeController::class, 'index'])->middleware('auth:admin')->name('home');
+
+Route::resource('admin/users', UserController::class);
+Route::resource('admin/restaurants', RestaurantController::class);
+ */

@@ -148,7 +148,7 @@ class RestaurantController extends Controller
             $restaurant->save();
 
             // リダイレクト先とフラッシュメッセージ
-            return redirect()->route('admin.restaurants.show')
+            return redirect()->route('admin.restaurants.show', $restaurant)
                 ->with('flash_message', '店舗を編集しました。');
     }
 
@@ -159,7 +159,7 @@ class RestaurantController extends Controller
     {
         $restaurant->delete();
 
-        return redirect()->route('admin.restaurans.index')
+        return redirect()->route('admin.restaurants.index')
             ->with('flash_massage', '店舗を削除しました。');
     }
 }
