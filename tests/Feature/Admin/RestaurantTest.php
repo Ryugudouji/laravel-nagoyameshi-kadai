@@ -113,7 +113,7 @@ class RestaurantTest extends TestCase
 
         $response = $this->actingAs($admin, 'admin')->get(route('admin.restaurants.create'));
 
-        $response->assertRedirect(route('admin.login'));
+        $response->assertStatus(200);
     }
 
 
@@ -151,7 +151,7 @@ class RestaurantTest extends TestCase
 
         $response = $this->actingAs($admin, 'admin')->post(route('admin.restaurants.store', $restaurantData));
 
-        $response->assertStatus(200);
+        $response->assertRedirect(route('admin.restaurants.index'));
     }
 
 
@@ -244,6 +244,13 @@ class RestaurantTest extends TestCase
         $newRestaurantData = [
             'name' => 'アップデートテストname',
             'description' => 'アップデートテストdescription',
+            'lowest_price' => $oldRestaurant->lowest_price,
+            'highest_price' => $oldRestaurant->highest_price,
+            'postal_code' => $oldRestaurant->postal_code,
+            'address' => $oldRestaurant->address,
+            'opening_time' => $oldRestaurant->opening_time,
+            'closing_time' => $oldRestaurant->closing_time,
+            'seating_capacity' => $oldRestaurant->seating_capacity
         ];
 
         $response = $this->actingAs($admin, 'admin')->put(route('admin.restaurants.update', $oldRestaurant), $newRestaurantData);
