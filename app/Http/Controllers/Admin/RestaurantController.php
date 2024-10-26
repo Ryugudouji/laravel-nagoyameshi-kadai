@@ -139,7 +139,7 @@ class RestaurantController extends Controller
             // 戻り値（ファイルパス）を変数$imageに代入する
             $image = $request->file('image')->store('public/restaurants');
             // ファイルパスからファイル名のみを取得し、Restaurantインスタンスのimageプロパティに代入する
-            $restaurant->image_name = basename($image);
+            $restaurant->image = basename($image);
         } else {
             // 画像ファイルがない場合
             $restaurant->image = ''; // 空文字を代入
