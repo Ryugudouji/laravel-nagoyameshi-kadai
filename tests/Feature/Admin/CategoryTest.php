@@ -139,7 +139,7 @@ class CategoryTest extends TestCase
 
         $response = $this->actingAs($admin, 'admin')->patch(route('admin.categories.update', $old_category), $new_category_data);
 
-        $response->assertRedirect(route('admin.categories.index', $old_category));
+        $response->assertRedirect(route('admin.categories.index'));
 
         // 新しいデータが正しくデータベースに保存されているか確認
         $this->assertDatabaseHas('categories', [
