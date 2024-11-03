@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Admin;
+use App\Models\Category;
 use App\Models\Restaurant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -147,7 +148,10 @@ class RestaurantTest extends TestCase
         $admin->password = Hash::make('nagoyameshi');
         $admin->save();
 
+        $categories = Category::factory()->count(3)->create();
+        $category_Ids = $categories->pluck('id')->toArray();
         $restaurantData = Restaurant::factory()->make()->toArray();
+        $restaurantData['category_ids'] = $category_Ids;
 
         $response = $this->actingAs($admin, 'admin')->post(route('admin.restaurants.store', $restaurantData));
 
@@ -236,10 +240,14 @@ class RestaurantTest extends TestCase
         $admin->password = Hash::make('nagoyameshi');
         $admin->save();
 
-        $oldRestaurant = Restaurant::factory()->create([
+        // 既存データとしてレストランデータにカテゴリを3つ紐づけて作成しておく
+        $oldRestaurant = Restaurant::factory()->hasAttached(Category::factory()->count(3))->create([
             'name' => '旧name',
             'description' => '旧description',
         ]);
+
+        // 更新用のカテゴリデータを別途作成する
+        $categories = Category::factory()->count(3)->create();
 
         $newRestaurantData = [
             'name' => 'アップデートテストname',
@@ -250,7 +258,8 @@ class RestaurantTest extends TestCase
             'address' => $oldRestaurant->address,
             'opening_time' => $oldRestaurant->opening_time,
             'closing_time' => $oldRestaurant->closing_time,
-            'seating_capacity' => $oldRestaurant->seating_capacity
+            'seating_capacity' => $oldRestaurant->seating_capacity,
+            'category_ids' => $categories->pluck('id')->toArray(),//更新用のカテゴリのIDをセットする
         ];
 
         $response = $this->actingAs($admin, 'admin')->put(route('admin.restaurants.update', $oldRestaurant), $newRestaurantData);
