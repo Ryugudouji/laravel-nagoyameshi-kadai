@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Category;
+use App\Models\RegularHoliday;
 
 class Restaurant extends Model
 {
@@ -13,5 +14,10 @@ class Restaurant extends Model
     public function categories()
     {
         return $this->belongsToMany(Category::class)->withTimestamps();
+    }
+
+    public function regularHolidays()
+    {
+        return $this->belongsToMany(RegularHoliday::class)->withTimestamps();
     }
 }
