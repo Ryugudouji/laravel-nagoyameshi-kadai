@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\RegularHoliday;
 use Illuminate\Http\Request;
 use App\Models\Restaurant;
 use Illuminate\Support\Facades\Auth;
@@ -36,8 +37,9 @@ class RestaurantController extends Controller
     {
 
         $categories = Category::all();
+        $regular_holidays = RegularHoliday::all();
 
-        return view('admin.restaurants.create', compact('categories'));
+        return view('admin.restaurants.create', compact('categories', '$regular_holidays'));
     }
 
     /**
@@ -85,8 +87,14 @@ class RestaurantController extends Controller
 
             $restaurant->save();
 
+            // カテゴリの同期
             $category_ids = array_filter($request->input('category_ids'));
             $restaurant->categories()->sync($category_ids);
+
+            // 定休日の同期
+            $regular_holiday_ids = array_filter($request->input('regular_holiday_ids'));
+            $restaurant->regularHolidays()->sync($regular_holiday_ids);
+
 
             // リダイレクト先とフラッシュメッセージ
             return redirect()->route('admin.restaurants.index')
@@ -108,6 +116,7 @@ class RestaurantController extends Controller
     public function edit(Restaurant $restaurant)
     {
         $categories = Category::all();
+        $regular_holidays = RegularHoliday::all();
 
         $category_ids = $restaurant->categories->pluck('id')->toArray();
 
@@ -157,6 +166,9 @@ class RestaurantController extends Controller
 
             $category_ids = array_filter($request->input('category_ids'));
             $restaurant->categories()->sync($category_ids);
+
+            $regular_holiday_ids = array_filter($request->input('regular_holiday_ids'));
+            $restaurant->regularHolidays()->sync($regular_holiday_ids);
 
             // リダイレクト先とフラッシュメッセージ
             return redirect()->route('admin.restaurants.show', $restaurant)
