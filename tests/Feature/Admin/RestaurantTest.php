@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Admin;
 use App\Models\Category;
+use App\Models\RegularHoliday;
 use App\Models\Restaurant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -123,6 +124,7 @@ class RestaurantTest extends TestCase
     public function test_guest_can_not_access_admin_restaurants_store()
     {
         $restaurantData = Restaurant::factory()->make()->toArray();
+        $restaurantData['regular_holiday_ids'] = [1, 2];
 
         $response = $this->post(route('admin.restaurants.store'), $restaurantData);
 
@@ -134,6 +136,7 @@ class RestaurantTest extends TestCase
     {
         $user = User::factory()->create();
         $restaurantData = Restaurant::factory()->make()->toArray();
+        $restaurantData['regular_holiday_ids'] = [1, 2];
 
         $response = $this->actingAs($user)->post(route('admin.restaurants.store', $restaurantData));
 
@@ -143,18 +146,29 @@ class RestaurantTest extends TestCase
     // ログイン済みの管理者は店舗を登録できる
     public function test_admin_can_access_admin_restaurants_store()
     {
+        // 管理者の作成
         $admin = new Admin();
         $admin->email = 'admin@example.com';
         $admin->password = Hash::make('nagoyameshi');
         $admin->save();
 
+        // カテゴリー、定休日のデータ準備
         $categories = Category::factory()->count(3)->create();
         $category_Ids = $categories->pluck('id')->toArray();
+
+        $regularHolidays = RegularHoliday::factory()->count(2)->create();
+        $regularHolidays_Ids =$regularHolidays->pluck('id')->toArray();
+
+
+        // レストランデータの作成
         $restaurantData = Restaurant::factory()->make()->toArray();
         $restaurantData['category_ids'] = $category_Ids;
+        $restaurantData['regular_holiday_ids'] = $regularHolidays_Ids;
 
+        // 管理者がリクエストを送信
         $response = $this->actingAs($admin, 'admin')->post(route('admin.restaurants.store', $restaurantData));
 
+        // リダイレクトの確認
         $response->assertRedirect(route('admin.restaurants.index'));
     }
 
@@ -207,7 +221,7 @@ class RestaurantTest extends TestCase
             'description' => 'アップデートテストdescription',
         ];
 
-        $response = $this->put(route('admin.restaurants.update', $restaurant));
+        $response = $this->put(route('admin.restaurants.update', $restaurant), $restaurantData);
 
         $response->assertRedirect(route('admin.login'));
     }
@@ -249,6 +263,10 @@ class RestaurantTest extends TestCase
         // 更新用のカテゴリデータを別途作成する
         $categories = Category::factory()->count(3)->create();
 
+        // 定休日データの作成
+        $regularHolidays = RegularHoliday::factory()->count(2)->create();
+        $regularHolidays_Ids = $regularHolidays->pluck('id')->toArray();
+
         $newRestaurantData = [
             'name' => 'アップデートテストname',
             'description' => 'アップデートテストdescription',
@@ -260,6 +278,7 @@ class RestaurantTest extends TestCase
             'closing_time' => $oldRestaurant->closing_time,
             'seating_capacity' => $oldRestaurant->seating_capacity,
             'category_ids' => $categories->pluck('id')->toArray(),//更新用のカテゴリのIDをセットする
+            'regular_holiday_ids' => $regularHolidays_Ids,
         ];
 
         $response = $this->actingAs($admin, 'admin')->put(route('admin.restaurants.update', $oldRestaurant), $newRestaurantData);
