@@ -39,7 +39,7 @@ class RestaurantController extends Controller
         $categories = Category::all();
         $regular_holidays = RegularHoliday::all();
 
-        return view('admin.restaurants.create', compact('categories', '$regular_holidays'));
+        return view('admin.restaurants.create', compact('categories', 'regular_holidays'));
     }
 
     /**
@@ -93,7 +93,7 @@ class RestaurantController extends Controller
 
             // 定休日の同期
             $regular_holiday_ids = array_filter($request->input('regular_holiday_ids'));
-            $restaurant->regularHolidays()->sync($regular_holiday_ids);
+            $restaurant->regular_holidays()->sync($regular_holiday_ids);
 
 
             // リダイレクト先とフラッシュメッセージ
@@ -120,7 +120,7 @@ class RestaurantController extends Controller
 
         $category_ids = $restaurant->categories->pluck('id')->toArray();
 
-        return view('admin.restaurants.edit', compact('restaurant', 'categories', 'category_ids'));
+        return view('admin.restaurants.edit', compact('restaurant', 'categories', 'category_ids', 'regular_holidays'));
     }
 
     /**
@@ -168,7 +168,7 @@ class RestaurantController extends Controller
             $restaurant->categories()->sync($category_ids);
 
             $regular_holiday_ids = array_filter($request->input('regular_holiday_ids'));
-            $restaurant->regularHolidays()->sync($regular_holiday_ids);
+            $restaurant->regular_holidays()->sync($regular_holiday_ids);
 
             // リダイレクト先とフラッシュメッセージ
             return redirect()->route('admin.restaurants.show', $restaurant)
