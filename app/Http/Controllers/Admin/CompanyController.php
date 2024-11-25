@@ -67,7 +67,7 @@ class CompanyController extends Controller
             'number_of_employees' => 'required',
         ]);
 
-        // フォームの入力内容をもとに、テーブルにデータを追加する
+        // フォームの入力内容をもとに、テーブルにデータを更新する
         $company->name = $request->input('name');
         $company->postal_code = $request->input('postal_code');
         $company->address = $request->input('address');
@@ -80,7 +80,7 @@ class CompanyController extends Controller
         $company->save();
 
         // リダイレクト先とフラッシュメッセージ
-        return redirect()->route('admin.company.index', $company)
+        return redirect()->route('admin.company.index')
         ->with('flash_message', '会社概要を編集しました。');
     }
 

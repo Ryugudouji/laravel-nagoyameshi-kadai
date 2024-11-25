@@ -45,17 +45,29 @@ class TermController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Term $term)
     {
-        //
+        return view('admin.terms.edit', compact('term'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Term $term)
     {
-        //
+         // バリデーション
+        $request->validate([
+            'content' =>  'required',
+        ]);
+
+        // フォームの入力内容をもとに、テーブルにデータを追加する
+        $term->content = $request->input('content');
+
+        $term->save();
+
+        // リダイレクト先とフラッシュメッセージ
+        return redirect()->route('admin.terms.index')
+        ->with('flash_message', '利用規約を編集しました。');
     }
 
     /**
