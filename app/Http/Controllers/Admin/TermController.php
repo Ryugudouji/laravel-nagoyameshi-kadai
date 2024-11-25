@@ -60,7 +60,7 @@ class TermController extends Controller
             'content' =>  'required',
         ]);
 
-        // フォームの入力内容をもとに、テーブルにデータを追加する
+        // フォームの入力内容をもとに、テーブルにデータを更新する
         $term->content = $request->input('content');
 
         $term->save();
