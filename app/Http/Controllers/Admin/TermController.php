@@ -13,9 +13,9 @@ class TermController extends Controller
      */
     public function index()
     {
-        $company = Term::orderBy('id')->first();
+        $term = Term::orderBy('id')->first();
 
-        return view('admin.terms.index', compact('company'));
+        return view('admin.terms.index', compact('term'));
     }
 
     /**
