@@ -13,7 +13,7 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $company = Company::orderBy('id')->all();
+        $company = Company::first();
 
         return view('admin.company.index', compact('company'));
     }

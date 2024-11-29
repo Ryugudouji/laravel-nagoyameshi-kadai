@@ -45,6 +45,8 @@ class TermTest extends TestCase
         $admin->password = Hash::make('nagoyameshi');
         $admin->save();
 
+        $term = Term::factory()->create();
+
         $response = $this->actingAs($admin, 'admin')->get(route('admin.terms.index'));
 
         $response->assertStatus(200);

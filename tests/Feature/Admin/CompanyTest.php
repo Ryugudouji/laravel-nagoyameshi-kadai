@@ -46,6 +46,8 @@ class CompanyTest extends TestCase
         $admin->password = Hash::make('nagoyameshi');
         $admin->save();
 
+        $company = Company::factory()->create();
+
         $response = $this->actingAs($admin, 'admin')->get(route('admin.company.index'));
 
         $response->assertStatus(200);

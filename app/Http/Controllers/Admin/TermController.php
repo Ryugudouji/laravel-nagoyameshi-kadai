@@ -13,7 +13,7 @@ class TermController extends Controller
      */
     public function index()
     {
-        $term = Term::orderBy('id')->all();
+        $term = Term::first();
 
         return view('admin.terms.index', compact('term'));
     }
