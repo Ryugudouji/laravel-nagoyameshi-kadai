@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CompanyController;
+use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\RestaurantController;
 use App\Http\Controllers\Admin\TermController;
 use App\Http\Controllers\Admin\UserController;
@@ -19,12 +20,20 @@ use App\Http\Controllers\Admin\UserController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
 
 require __DIR__.'/auth.php';
 
+// 管理者としてログインしていない状態でのみアクセス可能にするルーティング
+Route::group(['middleware' => 'guest:admin'], function() {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+});
+
+
+// 管理者専用のルーティング
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin'], function () {
     Route::get('home', [Admin\HomeController::class, 'index'])->name('home');
 
