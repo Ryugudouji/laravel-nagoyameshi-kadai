@@ -16,7 +16,9 @@ class UserSeeder extends Seeder
     {
         // User::factory()->count(100)->create();
 
-        User::create([
+        User::firstOrcreate(
+            ['email' => 'user@example.com'], // ユーザーを特定する条件
+            [
             'name' => '会員一郎',
             'kana' => 'カイインイチロウ',
             'email' => 'user@example.com',
