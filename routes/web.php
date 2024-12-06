@@ -31,14 +31,17 @@ require __DIR__.'/auth.php';
 
 // 管理者としてログインしていない状態でのみアクセス可能にするルーティング
 Route::group(['middleware' => 'guest:admin'], function() {
+    // 管理者未ログイン時にアクセス可能なトップページ
     Route::get('/', [HomeController::class, 'index'])->name('home');
 });
 
 
 // 管理者専用のルーティング
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin'], function () {
+    // 管理者ホームページ
     Route::get('home', [Admin\HomeController::class, 'index'])->name('home');
 
+    // 管理者用リソースルーティング
     Route::resource('users', AdminUserController::class);
     Route::resource('restaurants', RestaurantController::class);
     Route::resource('categories', CategoryController::class);
