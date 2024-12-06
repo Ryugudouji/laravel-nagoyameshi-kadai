@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
 
@@ -12,6 +13,9 @@ class RestaurantController extends Controller
         $keyword = $request->keyword;
         $category_id = $request->category_id;
         $price =  $request->price;
+
+        // カテゴリー取得
+        $categories = Category::all();
 
         // 並べ替え
         $sorts = [
@@ -63,6 +67,6 @@ class RestaurantController extends Controller
                             ->orderBy($sort_query ? null : 'created_at', $sort_query ? null : 'desc') //並べ替えの条件が空ならcreated_at descで並べ替え
                             ->paginate(15);
 
-        return view('restaurants.index',compact('restaurants', 'sorts', 'sorted'));
+        return view('restaurants.index',compact('restaurants', 'sorts', 'sorted', 'keyword', 'categories'));
     }
 }
