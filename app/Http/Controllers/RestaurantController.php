@@ -67,6 +67,8 @@ class RestaurantController extends Controller
                             ->orderBy($sort_query ? null : 'created_at', $sort_query ? null : 'desc') //並べ替えの条件が空ならcreated_at descで並べ替え
                             ->paginate(15);
 
-        return view('restaurants.index',compact('restaurants', 'sorts', 'sorted', 'keyword', 'categories'));
+        $total = $restaurants->total();
+
+        return view('restaurants.index',compact('restaurants', 'sorts', 'sorted', 'keyword', 'categories', 'category_id', 'price', 'total'));
     }
 }
