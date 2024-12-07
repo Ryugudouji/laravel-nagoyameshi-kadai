@@ -52,7 +52,7 @@ class RestaurantController extends Controller
         // 変数$category_idが存在する場合
         if ($category_id) {
             $query->whereHas('categories', function($q) use($category_id){
-                $q->where('id', $category_id);
+                $q->where('categories.id', $category_id);
             });
         }
 
@@ -63,9 +63,13 @@ class RestaurantController extends Controller
 
 
         // 並べ替え
-        $restaurants = $query->sortable($sort_query)  // sortable()メソッドを使って並べ替え
-                            ->orderBy($sort_query ? null : 'created_at', $sort_query ? null : 'desc') //並べ替えの条件が空ならcreated_at descで並べ替え
-                            ->paginate(15);
+        $restaurants = $query->sortable()
+            ->orderBy(
+                // $sort_queryが空でない場合はその値を使い、空ならデフォルトの並べ替え条件を使用
+                $sort_query ? key($sort_query) : 'created_at',
+                $sort_query ? current($sort_query) : 'desc'
+            )
+            ->paginate(15);
 
         $total = $restaurants->total();
 
