@@ -36,7 +36,7 @@ Route::group(['middleware' => 'guest:admin'], function() {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
     // ゲスト（管理者未ログイン）のみがアクセス可能な店舗一覧ページ
-    Route::resource('restaurants', UserRestaurantController::class)->only(['index']);
+    Route::resource('restaurants', UserRestaurantController::class)->only(['index', 'show']);
 });
 
 
