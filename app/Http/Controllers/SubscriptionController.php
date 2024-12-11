@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,6 +21,13 @@ class SubscriptionController extends Controller
      */
     public function create()
     {
+        $user = Auth::user();
+
+        // 管理者の場合はホームページにリダイレクト
+        if ($user instanceof Admin) {
+            return redirect()->route('home');
+        }
+
         // 現在ログイン中のユーザーのSetupIntentオブジェクトを作成
         $intent = Auth::user()->createSetupIntent();
 
@@ -31,9 +39,14 @@ class SubscriptionController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->user()->subscribed('premium_plan')) {
+            return redirect()->route('home');
+        }
+
         $request->user()->newSubscription(
-            'premium_plan', 'price_1QTekHP1x9xomPwVGawxXAOm'
-        )->create($request->paymentMethodId);
+            'premium_plan',
+            'price_1QTekHP1x9xomPwVGawxXAOm'
+            )->create($request->paymentMethodId);
 
         session()->flash('flash_message', '有料プランへの登録が完了しました。');
 

@@ -40,6 +40,30 @@ Route::group(['middleware' => 'guest:admin'], function() {
 });
 
 
+// サブスクリプションのルーティング
+Route::middleware(['auth', 'verified'])->group(function(){
+    // 未登録ユーザー用
+    Route::middleware(['unsubscribed'])->group(function () {
+        Route::get('subscription/create', [App\Http\Controllers\SubscriptionController::class, 'create'])
+            ->name('subscription.create');
+        Route::post('subscription', [App\Http\Controllers\SubscriptionController::class, 'store'])
+            ->name('subscription.store');
+    });
+
+    // 登録済みユーザー用
+    Route::middleware(['subscribed'])->group(function () {
+        Route::get('subscription/edit', [App\Http\Controllers\SubscriptionController::class, 'edit'])
+            ->name('subscription.edit');
+        Route::put('subscription', [App\Http\Controllers\SubscriptionController::class, 'update'])
+            ->name('subscription.update');
+        Route::get('subscription/cancel', [App\Http\Controllers\SubscriptionController::class, 'cancel'])
+            ->name('subscription.cancel');
+        Route::delete('subscription', [App\Http\Controllers\SubscriptionController::class, 'destroy'])
+            ->name('subscription.destroy');
+    });
+
+});
+
 // 管理者専用のルーティング
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin'], function () {
     // 管理者ホームページ
