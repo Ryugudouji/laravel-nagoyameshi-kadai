@@ -23,10 +23,6 @@ class SubscriptionController extends Controller
     {
         $user = Auth::user();
 
-        // 管理者の場合はホームページにリダイレクト
-        if ($user instanceof Admin) {
-            return redirect()->route('home');
-        }
 
         // 現在ログイン中のユーザーのSetupIntentオブジェクトを作成
         $intent = Auth::user()->createSetupIntent();
@@ -39,19 +35,15 @@ class SubscriptionController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->user()->subscribed('premium_plan')) {
-            return redirect()->route('home');
-        }
+        $user = $request->user();
 
+        // プレミアムプラン登録処理
         $request->user()->newSubscription(
             'premium_plan',
             'price_1QTekHP1x9xomPwVGawxXAOm'
             )->create($request->paymentMethodId);
 
-        session()->flash('flash_message', '有料プランへの登録が完了しました。');
-
-        return redirect()->route('home');
-
+        return redirect()->route('home')->with('flash_message', '有料プランへの登録が完了しました。');
     }
 
     /**
@@ -78,18 +70,27 @@ class SubscriptionController extends Controller
      * updateアクション（お支払い方法更新機能）
      */
     public function update(Request $request)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        // 支払い方法IDを取得
-        $paymentMethodId = $request->paymentMethodId;
+    // 支払い方法IDを取得
+    $paymentMethodId = $request->paymentMethodId;
 
-        $user->updateDefaultPaymentMethod($paymentMethodId);
-
-        session()->flash('flash_message', 'お支払い方法を変更しました。');
-
-        return redirect()->route('home');
+    // ユーザーがStripeカスタマーであることを確認
+    if (!$user->hasStripeId()) {
+        $user->createAsStripeCustomer();
     }
+
+    // 支払い方法を更新
+    try {
+        $user->updateDefaultPaymentMethod($paymentMethodId);
+        session()->flash('flash_message', 'お支払い方法を変更しました。');
+    } catch (\Exception $e) {
+        return redirect()->route('home')->withErrors('支払い方法の変更に失敗しました。');
+    }
+
+    return redirect()->route('home');
+}
 
     /**
      * cancelアクション（有料プラン解約ページ）
@@ -106,14 +107,18 @@ class SubscriptionController extends Controller
      * destroyアクション（有料プラン解約機能）
      */
     public function destroy(Request $request)
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-        // サブスクリプションをすぐに解約
+    // サブスクリプションの確認
+    if ($user->subscription('premium_plan')) {
+        // サブスクリプションを即座に解約
         $user->subscription('premium_plan')->cancelNow();
-
         session()->flash('flash_message', '有料プランを解約しました。');
-
-        return redirect()->route('home');
+    } else {
+        return redirect()->route('home')->withErrors('解約するサブスクリプションが見つかりません。');
     }
+
+    return redirect()->route('home');
+}
 }
