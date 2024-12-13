@@ -340,8 +340,8 @@ class SubscriptionTest extends TestCase
 
     // サブスクリプションが存在しないことを確認
     try {
-        $response = $this->post(route('subscription.destroy'));
-        $response->assertRedirect(route('home'));
+        $response = $this->delete(route('subscription.destroy'));
+        $response->assertRedirect(route('subscription.create'));
     } catch (IncompletePayment $e) {
         // 支払いが不完全の場合の例外処理
         $this->assertInstanceOf(IncompletePayment::class, $e);
@@ -357,7 +357,7 @@ class SubscriptionTest extends TestCase
     $user->newSubscription('premium_plan', 'price_1QTekHP1x9xomPwVGawxXAOm')->create('pm_card_visa');
     $this->actingAs($user);
 
-    $response = $this->post(route('subscription.destroy'));
+    $response = $this->delete(route('subscription.destroy'));
 
     $user = $user->fresh();
     $this->assertFalse($user->subscribed('premium_plan'));
