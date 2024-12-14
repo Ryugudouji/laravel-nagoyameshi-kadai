@@ -11,8 +11,9 @@ class HomeController extends Controller
     public function index()
     {
 
-        // restaurantsテーブルから6件のデータを取得
-        $highly_rated_restaurants = Restaurant::take(6)->get();
+        // restaurantsテーブルから平均評価が高い順に6件のデータを取得
+        $highly_rated_restaurants = Restaurant::withAvg('reviews', 'score')->orderBy('reviews_avg_score', 'desc')->take(6)->get();
+
 
         // categoriesテーブルからすべてのデータを取得
         $categories = Category::all();
