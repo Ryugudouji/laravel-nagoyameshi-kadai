@@ -23,6 +23,7 @@ class RestaurantController extends Controller
             '掲載日が古い順' => 'created_at asc',
             '価格が安い順' => 'lowest_price asc',
             '価格が高い順' => 'lowest_price desc',
+            '評価が高い順' => 'rating desc',
         ];
 
         // 並べ替えのデフォルト
