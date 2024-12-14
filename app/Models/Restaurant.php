@@ -26,4 +26,10 @@ class Restaurant extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    public function ratingSortable($query, $direction)
+    {
+        return $query->withAvg('reviews', 'score')->orderBy('reviews_avg_score', $direction);
+    }
+
 }
