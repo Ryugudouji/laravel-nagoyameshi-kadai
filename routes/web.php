@@ -50,7 +50,7 @@ require __DIR__.'/auth.php';
 
 
                         // 予約関連ルートの定義
-                        Route::group(['middleware' => ['auth', 'verified', 'paid']], function() {
+                        Route::group(['middleware' => ['auth', 'verified']], function() {
                             Route::get('/reservations', [App\Http\Controllers\ReservationController::class, 'index'])->name('reservations.index');
                             Route::get('/restaurants/{restaurant}/reservations/create', [App\Http\Controllers\ReservationController::class, 'create'])->name('restaurants.reservations.create');
                             Route::post('/restaurants/{restaurant}/reservations', [App\Http\Controllers\ReservationController::class, 'store'])->name('restaurants.reservations.store');
