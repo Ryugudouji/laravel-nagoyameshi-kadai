@@ -24,6 +24,7 @@ class RestaurantController extends Controller
             '価格が安い順' => 'lowest_price asc',
             '価格が高い順' => 'lowest_price desc',
             '評価が高い順' => 'rating desc',
+            '予約数が多い順' => 'reservations_count desc',
         ];
 
         // 並べ替えのデフォルト
@@ -62,7 +63,10 @@ class RestaurantController extends Controller
             $query->where('lowest_price','<=', $price);
         }
 
-
+        // 予約数で並べ替える場合
+        if ($sorted === 'reservations_count desc') {
+            $restaurants = $query->popularSortable()->paginate(15); // popularSortableを適用
+        } else {
         // 並べ替え
         $restaurants = $query->sortable()
             ->orderBy(
@@ -71,6 +75,7 @@ class RestaurantController extends Controller
                 $sort_query ? current($sort_query) : 'desc'
             )
             ->paginate(15);
+        }
 
         $total = $restaurants->total();
 

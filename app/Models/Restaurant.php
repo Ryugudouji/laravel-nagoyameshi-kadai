@@ -36,4 +36,10 @@ class Restaurant extends Model
     {
         return $this->hasMany(Reservation::class);
     }
+
+    public function scopePopularSortable($query)
+    {
+        return $query->withCount('reservations') // 予約数をカウント
+                     ->orderBy('reservations_count', 'desc'); // 予約数が多い順に並べ替え
+    }
 }
