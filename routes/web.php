@@ -49,6 +49,16 @@ require __DIR__.'/auth.php';
                         ->name('subscription.destroy');
 
 
+                        // 予約関連ルートの定義
+                        Route::group(['middleware' => ['auth', 'verified', 'paid']], function() {
+                            Route::get('/reservations', [App\Http\Controllers\ReservationController::class, 'index'])->name('reservations.index');
+                            Route::get('/restaurants/{restaurant}/reservations/create', [App\Http\Controllers\ReservationController::class, 'create'])->name('restaurants.reservations.create');
+                            Route::post('/restaurants/{restaurant}/reservations', [App\Http\Controllers\ReservationController::class, 'store'])->name('restaurants.reservations.store');
+                            Route::delete('/reservations/{reservation}', [App\Http\Controllers\ReservationController::class, 'destroy'])->name('reservations.destroy');
+
+                        });
+
+
                         // レビュー関連ルートの定義
                         // 「index」アクションは、管理者でなく、メール認証済みの一般ユーザーがアクセス可能
                         Route::resource('restaurants.reviews', ReviewController::class)
