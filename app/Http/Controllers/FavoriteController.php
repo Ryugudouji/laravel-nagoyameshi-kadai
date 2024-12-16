@@ -12,11 +12,11 @@ class FavoriteController extends Controller
     public function index()
     {
         $favorite_restaurants = Auth::user()
-            ->favorites()
+            ->restaurants()
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        return view('favorites.index', ['favorite_restaurants' => $favorite_restaurants,]);
+        return view('favorites.index', ['favorite_restaurants' => $favorite_restaurants]);
     }
 
     /**
@@ -33,7 +33,7 @@ class FavoriteController extends Controller
         // 対象の店舗を取得
         $restaurant = Restaurant::findOrFail($id);
 
-        Auth::user()->favorites()->attach($restaurant->id);
+        Auth::user()->favorite_restaurants()->attach($restaurant->id);
 
         session()->flash('flash_message', 'お気に入りに追加しました。');
 
@@ -69,7 +69,7 @@ class FavoriteController extends Controller
     {
         $restaurant = Restaurant::findOrFail($id);
 
-        Auth::user()->favorites()->detach($restaurant->id);
+        Auth::user()->favorite_restaurants()->detach($restaurant->id);
 
         session()->flash('flash_message', 'お気に入りを解除しました。');
 

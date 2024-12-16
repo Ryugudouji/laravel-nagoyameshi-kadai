@@ -68,4 +68,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Restaurant::class, 'restaurant_user')
                     ->withTimestamps();
     }
+
+    public function favorite_restaurants(): BelongsToMany
+    {
+        return $this->belongsToMany(Restaurant::class, 'restaurant_user')
+                    ->withTimestamps();
+    }
 }
