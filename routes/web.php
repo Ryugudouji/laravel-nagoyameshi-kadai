@@ -10,7 +10,10 @@ use App\Http\Controllers\Admin\UserController as AdminUserController; // 管理�
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController as UserUserController;  // 一般ユーザー用
 use App\Http\Controllers\RestaurantController as UserRestaurantController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\FavoriteController;
 
 
 require __DIR__.'/auth.php';
@@ -31,43 +34,53 @@ require __DIR__.'/auth.php';
             Route::middleware(['auth', 'verified'])->group(function(){
                 // 未登録ユーザー用
                 Route::middleware(['unsubscribed'])->group(function () {
-                    Route::get('subscription/create', [App\Http\Controllers\SubscriptionController::class, 'create'])
+                    Route::get('subscription/create', [SubscriptionController::class, 'create'])
                         ->name('subscription.create');
-                    Route::post('subscription', [App\Http\Controllers\SubscriptionController::class, 'store'])
+                    Route::post('subscription', [SubscriptionController::class, 'store'])
                         ->name('subscription.store');
                 });
 
                 // 登録済みユーザー用
                 Route::middleware(['subscribed'])->group(function () {
-                    Route::get('subscription/edit', [App\Http\Controllers\SubscriptionController::class, 'edit'])
+                    Route::get('subscription/edit', [SubscriptionController::class, 'edit'])
                         ->name('subscription.edit');
-                    Route::put('subscription', [App\Http\Controllers\SubscriptionController::class, 'update'])
+                    Route::put('subscription', [SubscriptionController::class, 'update'])
                         ->name('subscription.update');
-                    Route::get('subscription/cancel', [App\Http\Controllers\SubscriptionController::class, 'cancel'])
+                    Route::get('subscription/cancel', [SubscriptionController::class, 'cancel'])
                         ->name('subscription.cancel');
-                    Route::delete('subscription', [App\Http\Controllers\SubscriptionController::class, 'destroy'])
+                    Route::delete('subscription', [SubscriptionController::class, 'destroy'])
                         ->name('subscription.destroy');
 
 
-                        // 予約関連ルートの定義
-                        Route::group(['middleware' => ['auth', 'verified']], function() {
-                            Route::get('/reservations', [App\Http\Controllers\ReservationController::class, 'index'])->name('reservations.index');
-                            Route::get('/restaurants/{restaurant}/reservations/create', [App\Http\Controllers\ReservationController::class, 'create'])->name('restaurants.reservations.create');
-                            Route::post('/restaurants/{restaurant}/reservations', [App\Http\Controllers\ReservationController::class, 'store'])->name('restaurants.reservations.store');
-                            Route::delete('/reservations/{reservation}', [App\Http\Controllers\ReservationController::class, 'destroy'])->name('reservations.destroy');
+                        // 予約のルーティング
+                        // Route::group(['middleware' => ['auth', 'verified']], function() {
+                            Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
+                            Route::get('/restaurants/{restaurant}/reservations/create', [ReservationController::class, 'create'])->name('restaurants.reservations.create');
+                            Route::post('/restaurants/{restaurant}/reservations', [ReservationController::class, 'store'])->name('restaurants.reservations.store');
+                            Route::delete('/reservations/{reservation}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
+                        // });
 
-                        });
 
+                            // レビューのルーティング
+                            // 「index」アクションは、管理者でなく、メール認証済みの一般ユーザーがアクセス可能
+                            Route::resource('restaurants.reviews', ReviewController::class)
+                            ->only(['index']);
 
-                        // レビュー関連ルートの定義
-                        // 「index」アクションは、管理者でなく、メール認証済みの一般ユーザーがアクセス可能
-                        Route::resource('restaurants.reviews', ReviewController::class)
-                        ->only(['index']);
+                            // その他のアクションは、管理者でなく、メール認証済みかつ有料プランのユーザーがアクセス可能
+                            Route::resource('restaurants.reviews', ReviewController::class)
+                                ->middleware('subscribed')
+                                ->except('index');
 
-                        // その他のアクションは、管理者でなく、メール認証済みかつ有料プランのユーザーがアクセス可能
-                        Route::resource('restaurants.reviews', ReviewController::class)
-                            ->middleware('subscribed')
-                            ->except('index');
+                            // お気に入りのルーティング
+                            Route::group(['middleware' => ['guest:admin']], function() {  // 管理者としてログインしていない
+                                Route::group(['middleware' => ['auth', 'verified']], function() {  // 一般ユーザーとしてログイン済み、メール認証済み
+                                    Route::middleware(['subscribed'])->group(function () {  // 有料プランに登録済み
+                                        Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+                                        Route::post('/favorites/{restaurant_id}', [FavoriteController::class, 'store'])->name('favorites.store');
+                                        Route::delete('/favorites/{restaurant_id}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+                                    });
+                                });
+                            });
                 });
             });
         });
