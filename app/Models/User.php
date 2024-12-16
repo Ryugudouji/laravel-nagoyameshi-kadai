@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Laravel\Cashier\Billable;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -60,5 +61,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function restaurants(): BelongsToMany
+    {
+        return $this->belongsToMany(Restaurant::class, 'restaurant_user')
+                    ->withTimestamps();
     }
 }

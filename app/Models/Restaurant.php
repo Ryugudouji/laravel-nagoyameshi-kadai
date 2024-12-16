@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Category;
 use App\Models\RegularHoliday;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Kyslik\ColumnSortable\Sortable;
 
 class Restaurant extends Model
@@ -41,5 +42,11 @@ class Restaurant extends Model
     {
         return $query->withCount('reservations') // 予約数をカウント
                      ->orderBy('reservations_count', 'desc'); // 予約数が多い順に並べ替え
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'restaurant_user')
+                    ->withTimestamps();
     }
 }
