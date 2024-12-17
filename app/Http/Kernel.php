@@ -67,7 +67,6 @@ class Kernel extends HttpKernel
     ];
 
     protected $routeMiddleware = [
-        // 新しいミドルウェア
         'subscribed' => \App\Http\Middleware\Subscribed::class,
         'unsubscribed' => \App\Http\Middleware\NotSubscribed::class,
     ];

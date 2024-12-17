@@ -97,6 +97,7 @@ require __DIR__.'/auth.php';
 
 
 
+
     // 管理者専用のルーティング
     Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'auth:admin'], function () {
         // 管理者ホームページ
@@ -109,4 +110,4 @@ require __DIR__.'/auth.php';
         Route::resource('company', AdminCompanyController::class);
         Route::resource('terms', AdminTermController::class);
 
-});
+    });
