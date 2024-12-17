@@ -3,17 +3,19 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\CompanyController;
+use App\Http\Controllers\Admin\CompanyController as AdminCompanyController;
 use App\Http\Controllers\Admin\RestaurantController as AdminRestaurantController;
-use App\Http\Controllers\Admin\TermController;
-use App\Http\Controllers\Admin\UserController as AdminUserController; // 管理者用
+use App\Http\Controllers\Admin\TermController as AdminTermController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\UserController as UserUserController;  // 一般ユーザー用
+use App\Http\Controllers\UserController as UserUserController;
 use App\Http\Controllers\RestaurantController as UserRestaurantController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\TermController;
 
 
 require __DIR__.'/auth.php';
@@ -25,6 +27,12 @@ require __DIR__.'/auth.php';
 
         // ゲスト（管理者未ログイン）のみがアクセス可能な店舗一覧ページ
         Route::resource('restaurants', UserRestaurantController::class)->only(['index', 'show']);
+
+        // 会社概要ページ
+        Route::get('/company', [CompanyController::class, 'index'])->name('company.index');
+
+        // 利用規約ページ
+        Route::get('/terms', [TermController::class, 'index'])->name('terms.index');
 
         // ユーザーのルーティング
         Route::group(['middleware' => ['auth', 'verified']], function() {
