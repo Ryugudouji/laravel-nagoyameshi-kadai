@@ -106,7 +106,7 @@ require __DIR__.'/auth.php';
         Route::resource('users', AdminUserController::class);
         Route::resource('restaurants', AdminRestaurantController::class);
         Route::resource('categories', CategoryController::class);
-        Route::resource('company', CompanyController::class);
-        Route::resource('terms', TermController::class);
+        Route::resource('company', AdminCompanyController::class);
+        Route::resource('terms', AdminTermController::class);
 
 });
