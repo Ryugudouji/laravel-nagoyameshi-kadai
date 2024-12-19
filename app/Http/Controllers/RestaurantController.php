@@ -65,16 +65,20 @@ class RestaurantController extends Controller
 
         // 予約数で並べ替える場合
         if ($sorted === 'reservations_count desc') {
-            $restaurants = $query->popularSortable()->paginate(15); // popularSortableを適用
-        } else {
-        // 並べ替え
-        $restaurants = $query->sortable()
-            ->orderBy(
-                // $sort_queryが空でない場合はその値を使い、空ならデフォルトの並べ替え条件を使用
-                $sort_query ? key($sort_query) : 'created_at',
-                $sort_query ? current($sort_query) : 'desc'
-            )
-            ->paginate(15);
+            $restaurants = $query->popularSortable()->paginate(15); // 予約数順
+        }
+        // 評価の高い順で並べ替える場合
+        elseif ($sorted === 'rating desc') {
+            $restaurants = $query->ratingSortable('desc')->paginate(15); // 評価順
+        }
+        // その他の並べ替え
+        else {
+            $restaurants = $query->sortable()
+                ->orderBy(
+                    $sort_query ? key($sort_query) : 'created_at', // 並べ替えキー
+                    $sort_query ? current($sort_query) : 'desc'   // 並べ替え方向
+                )
+                ->paginate(15);
         }
 
         $total = $restaurants->total();
